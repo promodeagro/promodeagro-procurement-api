@@ -1,0 +1,35 @@
+# src/handlers/orders/function.yml
+createPurchaseOrder:
+  handler: src/handlers/orders/purchase_order.create
+  events:
+    - httpApi:
+        path: /purchase-orders
+        method: post
+
+listPurchaseOrders:
+  handler: src/handlers/orders/purchase_order.list
+  events:
+    - httpApi:
+        path: /purchase-orders
+        method: get
+
+getPurchaseOrder:
+  handler: src/handlers/orders/purchase_order.get
+  events:
+    - httpApi:
+        path: /purchase-orders/{poNumber}
+        method: get
+
+updatePurchaseOrder:
+  handler: src/handlers/orders/purchase_order.update
+  events:
+    - httpApi:
+        path: /purchase-orders/{poNumber}
+        method: put
+
+deletePurchaseOrder:
+  handler: src/handlers/orders/purchase_order.delete
+  events:
+    - httpApi:
+        path: /purchase-orders/{poNumber}
+        method: delete 

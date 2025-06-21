@@ -1,0 +1,30 @@
+service: promodeagro-procurement-api
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.10
+  region: ap-south-1 # You can change this to your preferred AWS region
+  
+
+
+# This section is where you'll define your Lambda functions.
+# Following the pattern in your screenshot, we'll define them in separate files.
+functions:
+  - ${file(src/handlers/orders/function.yml)}
+
+# This section is for defining your AWS resources, like your DynamoDB table.
+# We are removing this section to use an existing table.
+
+plugins:
+  - serverless-python-requirements
+  - serverless-dotenv-plugin
+  # serverless-offline is a great plugin for local testing.
+  # You can install it by running: npm install serverless-offline --save-dev
+  - serverless-offline
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
+    layer: true # This will create a Lambda Layer for your python packages 

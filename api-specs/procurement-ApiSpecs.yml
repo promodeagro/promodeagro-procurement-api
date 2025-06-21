@@ -1,0 +1,206 @@
+openapi: 3.0.3
+info:
+  title: Purchase Order API
+  version: 1.0.0
+  description: API for managing purchase orders, suppliers, and order statuses.
+
+servers:
+  - url: /dev
+
+paths:
+  /purchase-orders:
+    get:
+      summary: List purchase orders
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [Draft, Confirmed, Pending, Rejected, Completed, Cancelled]
+          description: Filter by purchase order status
+        - in: query
+          name: supplier
+          schema:
+            type: string
+          description: Filter by supplier name
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Search by purchase order number
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: List of purchase orders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PurchaseOrder'
+                  total:
+                    type: integer
+
+    post:
+      summary: Create a new purchase order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PurchaseOrderCreate'
+      responses:
+        '201':
+          description: Purchase order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+
+  /purchase-orders/{poNumber}:
+    get:
+      summary: Get a purchase order by number
+      parameters:
+        - in: path
+          name: poNumber
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Purchase order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+        '404':
+          description: Not found
+
+    put:
+      summary: Update a purchase order
+      parameters:
+        - in: path
+          name: poNumber
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PurchaseOrderUpdate'
+      responses:
+        '200':
+          description: Updated purchase order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+
+    delete:
+      summary: Delete a purchase order
+      parameters:
+        - in: path
+          name: poNumber
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Deleted
+
+components:
+  schemas:
+    PurchaseOrder:
+      type: object
+      properties:
+        poNumber:
+          type: string
+        supplierName:
+          type: string
+        status:
+          type: string
+          enum: [Draft, Confirmed, Pending, Rejected, Completed, Cancelled]
+        deliveryDate:
+          type: string
+          format: date
+        orderDate:
+          type: string
+          format: date
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        notes:
+          type: string
+        shipTo:
+          type: string
+        paymentTerm:
+          type: string
+
+    PurchaseOrderCreate:
+      type: object
+      required: [supplierName, deliveryDate, items]
+      properties:
+        supplierName:
+          type: string
+        deliveryDate:
+          type: string
+          format: date
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        notes:
+          type: string
+        shipTo:
+          type: string
+        paymentTerm:
+          type: string
+
+    PurchaseOrderUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [Draft, Confirmed, Pending, Rejected, Completed, Cancelled]
+        deliveryDate:
+          type: string
+          format: date
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        notes:
+          type: string
+        shipTo:
+          type: string
+        paymentTerm:
+          type: string
+
+    OrderItem:
+      type: object
+      properties:
+        itemCode:
+          type: string
+        itemName:
+          type: string
+        category:
+          type: string
+        unit:
+          type: string
+        quantity:
+          type: number
